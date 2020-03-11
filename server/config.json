@@ -1,0 +1,7 @@
+{
+  "portin": 5000,
+  "portout": 5001,
+  "cluster": [
+    "localhost"
+  ]
+}
