@@ -1,4 +1,4 @@
-# DodecaPi Protocol Version 1
+# DodecaPi Protocol Version 2
 
 # Summary
 
@@ -86,6 +86,14 @@ the protocol version received in 0x00 Handshake is compatible with the child
 version. If the protocols are incompatible, the child should send 0x07 Disconnect
 instead.
 
+## 0x10 Pong
+
+| Field Name | Field Type | Notes |
+|------------|------------|-------|
+|            |            |       |
+
+0x10 Pong leaves the data field empty.
+
 # Child-bound Packets
 
 ## 0x00 Handshake
@@ -113,6 +121,15 @@ instead of 0x08 Handshake Response.
 0x05 Factor Request should send either "u8", "u16", "u32", or "u64" to determine
 the type of the range start and end. Then, the range start should be sent as the
 predetermined type. Then, the range end should be sent as the predetermined type.
+
+## 0x09 Ping
+
+| Field Name | Field Type | Notes |
+|------------|------------|-------|
+|            |            |       |
+
+0x09 Ping leaves the data field empty, and the child should respond with a
+0x10 Pong.
 
 # Packets for Either
 
