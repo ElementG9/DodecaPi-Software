@@ -16,7 +16,7 @@ fn main() {
         .read_line(&mut master)
         .expect("Failed to read");
 
-    let listener = TcpListener::bind(listen).unwrap();
+    let listener = TcpListener::bind("0.0.0.0:6500").unwrap();
 
     for stream in listener.incoming() {
         let mut stream = stream.unwrap();
