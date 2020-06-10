@@ -1,20 +1,14 @@
 extern crate protocol;
-use std::io::prelude::*;
+use protocol::packet::*;
 use std::net::TcpStream;
 
+static SERVER_ADDRESS: &str = "0.0.0.0";
+static SERVER_PORT: u16 = 6500;
+static CLIENT_PROTOCOL_VERSION: u8 = 2;
+
 fn main() {
-    let mut p = protocol::Packet::new(0x00);
-    p.write_string("test".to_owned());
-
-    let bytes = p.get_bytes();
-    println!("{:X?}", bytes);
-
-    let length = protocol::Packet::read_u32(0, &bytes);
-    let id = protocol::Packet::read_u8(4, &bytes);
-    let s = protocol::Packet::read_string(5, &bytes);
-    println!("Length: {}, ID: {}, String: \"{}\"", length, id, s);
-
-    let mut stream = TcpStream::connect("127.0.0.1:6500").unwrap();
-
-    stream.write(&bytes);
+    let mut stream = TcpStream::connect(&format!("{}:{}", SERVER_ADDRESS, SERVER_PORT))
+        .expect("could not connect to server");
+    let _ = Handshake::new(CLIENT_PROTOCOL_VERSION).write(&mut stream);
+    let response = HandshakeResponse::read(&mut stream);
 }
