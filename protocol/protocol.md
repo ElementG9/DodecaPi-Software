@@ -4,26 +4,26 @@
 
 The parent connects to each child and sends these packets:
 
-P->C - 0x00 Handshake
+P->C - [0x00 Handshake](#0x00-handshake)
 
-C->P - 0x08 Handshake Response
+C->P - [0x08 Handshake Response](#0x08-handshake-response)
 
-Todo: P->C - 0x01 Encryption Request
+Todo: P->C - [0x01 Encryption Request](#0x01-encryption-request)
 
-Todo: C->P - 0x02 Encryption Response
+Todo: C->P - [0x02 Encryption Response](#0x02-encryption-response)
 
-Todo: P->C - 0x03 Compression Request
+Todo: P->C - [0x03 Compression Request](#0x03-compression-request)
 
-Todo: C->P - 0x04 Compression Response
+Todo: C->P - [0x04 Compression Response](#0x04-compression-response)
 
-P->C - 0x05 Factor Request
+P->C - [0x05 Factor Request](#0x05-factor-request)
 
-C->P - 0x06 Factor Response
+C->P - [0x06 Factor Response](#0x06-factor-response)
 
-P->C - 0x07 Disconnect
+P->C - [0x07 Disconnect](#0x07-disconnect)
 
 If either the parent or the child receives a malformed packet, they should send
-a 0x07 Disconnect to end the connection.
+a [0x07 Disconnect](#0x07-disconnect) to end the connection.
 
 # Packet Format
 
@@ -69,11 +69,11 @@ a 0x07 Disconnect to end the connection.
 | Factor Value Type | string        | Either "u8", "u16", "u32", or "u64". Defaults to "u8" if Found Factor is false.          |
 | Factor Value      | predetermined | The type was determined in Factor Value Type. Defaults to 0x00 if Found Factor is false. |
 
-0x06 Factor Response returns the results of the child's work for factoring the
+[0x06 Factor Response](#0x06-factor-response) returns the results of the child's work for factoring the
 range provided. If no factor was found in the range, then Found Factor is false.
 If Found Factor is false, Factor Value Type defaults to "u8" and Factor Value to
 0x00. If Found Factor is true, Factor Value type is the type provided in
-0x05 Factor Request, and Factor Value contains the factor.
+[0x05 Factor Request](#0x05-factor-request), and Factor Value contains the factor.
 
 ## 0x08 Handshake Response
 
@@ -82,8 +82,8 @@ If Found Factor is false, Factor Value Type defaults to "u8" and Factor Value to
 |            |            |       |
 
 Ox08 Handshake Response should leave the data field empty. Should only be sent if
-the protocol version received in 0x00 Handshake is compatible with the child
-version. If the protocols are incompatible, the child should send 0x07 Disconnect
+the protocol version received in [0x00 Handshake](#0x00-handshake) is compatible with the child
+version. If the protocols are incompatible, the child should send [0x07 Disconnect](#0x07-disconnect)
 instead.
 
 ## 0x10 Pong
@@ -92,7 +92,7 @@ instead.
 |------------|------------|-------|
 |            |            |       |
 
-0x10 Pong leaves the data field empty.
+[0x10 Pong](#0x10-pong) leaves the data field empty.
 
 # Child-bound Packets
 
@@ -103,8 +103,8 @@ instead.
 | Protocol Number | u8         |       |
 
 Ox00 Handshake should only send a u8 for the protocol number. If the child does
-not support the protocol version, they should send a 0x07 Disconnect in response
-instead of 0x08 Handshake Response.
+not support the protocol version, they should send a [0x07 Disconnect](#0x07-disconnect) in response
+instead of [0x08 Handshake Response](#0x08-handshake-response).
 
 ## Todo: 0x01 Encryption Request
 
@@ -118,7 +118,7 @@ instead of 0x08 Handshake Response.
 | Range Start | predetermined | The type was determined in Range Type. |
 | Range End   | predetermined | The type was determined in Range Type. |
 
-0x05 Factor Request should send either "u8", "u16", "u32", or "u64" to determine
+[0x05 Factor Request](#0x05-factor-request) should send either "u8", "u16", "u32", or "u64" to determine
 the type of the range start and end. Then, the range start should be sent as the
 predetermined type. Then, the range end should be sent as the predetermined type.
 
@@ -128,8 +128,8 @@ predetermined type. Then, the range end should be sent as the predetermined type
 |------------|------------|-------|
 |            |            |       |
 
-0x09 Ping leaves the data field empty, and the child should respond with a
-0x10 Pong.
+[0x09 Ping](#0x09-ping) leaves the data field empty, and the child should respond with a
+[0x10 Pong](#0x10-pong).
 
 # Packets for Either
 
@@ -139,5 +139,5 @@ predetermined type. Then, the range end should be sent as the predetermined type
 |------------|------------|-------|
 |            |            |       |
 
-0x07 Disconnect leaves the data field empty, but the sender and recipient
+[0x07 Disconnect](#0x07-disconnect) leaves the data field empty, but the sender and recipient
 should both attempt to close the connection after sending / receiving it.
