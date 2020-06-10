@@ -10,5 +10,5 @@ fn main() {
     let mut stream = TcpStream::connect(&format!("{}:{}", SERVER_ADDRESS, SERVER_PORT))
         .expect("could not connect to server");
     let _ = Handshake::new(CLIENT_PROTOCOL_VERSION).write(&mut stream);
-    let response = HandshakeResponse::read(&mut stream);
+    let _response = HandshakeResponse::read(&mut stream);
 }

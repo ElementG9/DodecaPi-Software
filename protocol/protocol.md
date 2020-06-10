@@ -2,27 +2,27 @@
 
 # Summary
 
-The parent connects to each child and sends these packets:
+The master connects to each worker and sends these packets:
 
-P->C - [0x00 Handshake](#0x00-handshake)
+M->W - [0x00 Handshake](#0x00-handshake)
 
-C->P - [0x08 Handshake Response](#0x08-handshake-response)
+W->M - [0x08 Handshake Response](#0x08-handshake-response)
 
-Todo: P->C - [0x01 Encryption Request](#0x01-encryption-request)
+Todo: M->W - [0x01 Encryption Request](#0x01-encryption-request)
 
-Todo: C->P - [0x02 Encryption Response](#0x02-encryption-response)
+Todo: W->M - [0x02 Encryption Response](#0x02-encryption-response)
 
-Todo: P->C - [0x03 Compression Request](#0x03-compression-request)
+Todo: M->W - [0x03 Compression Request](#0x03-compression-request)
 
-Todo: C->P - [0x04 Compression Response](#0x04-compression-response)
+Todo: W->M - [0x04 Compression Response](#0x04-compression-response)
 
-P->C - [0x05 Factor Request](#0x05-factor-request)
+M->W - [0x05 Factor Request](#0x05-factor-request)
 
-C->P - [0x06 Factor Response](#0x06-factor-response)
+W->M - [0x06 Factor Response](#0x06-factor-response)
 
-P->C - [0x07 Disconnect](#0x07-disconnect)
+M->W - [0x07 Disconnect](#0x07-disconnect)
 
-If either the parent or the child receives a malformed packet, they should send
+If either the master or the worker receives a malformed packet, they should send
 a [0x07 Disconnect](#0x07-disconnect) to end the connection.
 
 # Packet Format
@@ -55,7 +55,7 @@ a [0x07 Disconnect](#0x07-disconnect) to end the connection.
 | string     | unknown      | A valid UTF-8 encoded string.        | u32 sent with length first, then the string data. |
 | byte array | unknown      | Any valid sequence of bytes.         | Contents determined by packet id.                 |
 
-# Parent-bound Packets
+# Master-bound Packets
 
 ## Todo: 0x02 Encryption Response
 
@@ -65,11 +65,11 @@ a [0x07 Disconnect](#0x07-disconnect) to end the connection.
 
 | Field Name        | Field Type    | Notes                                                                                    |
 |-------------------|---------------|------------------------------------------------------------------------------------------|
-| Found Factor      | boolean       | Only true if the child found a factor. If false, the other fields should be ignored.     |
+| Found Factor      | boolean       | Only true if the worker found a factor. If false, the other fields should be ignored.     |
 | Factor Value Type | string        | Either "u8", "u16", "u32", or "u64". Defaults to "u8" if Found Factor is false.          |
 | Factor Value      | predetermined | The type was determined in Factor Value Type. Defaults to 0x00 if Found Factor is false. |
 
-[0x06 Factor Response](#0x06-factor-response) returns the results of the child's work for factoring the
+[0x06 Factor Response](#0x06-factor-response) returns the results of the worker's work for factoring the
 range provided. If no factor was found in the range, then Found Factor is false.
 If Found Factor is false, Factor Value Type defaults to "u8" and Factor Value to
 0x00. If Found Factor is true, Factor Value type is the type provided in
@@ -82,8 +82,8 @@ If Found Factor is false, Factor Value Type defaults to "u8" and Factor Value to
 |            |            |       |
 
 Ox08 Handshake Response should leave the data field empty. Should only be sent if
-the protocol version received in [0x00 Handshake](#0x00-handshake) is compatible with the child
-version. If the protocols are incompatible, the child should send [0x07 Disconnect](#0x07-disconnect)
+the protocol version received in [0x00 Handshake](#0x00-handshake) is compatible with the worker
+version. If the protocols are incompatible, the worker should send [0x07 Disconnect](#0x07-disconnect)
 instead.
 
 ## 0x10 Pong
@@ -94,7 +94,7 @@ instead.
 
 [0x10 Pong](#0x10-pong) leaves the data field empty.
 
-# Child-bound Packets
+# Worker-bound Packets
 
 ## 0x00 Handshake
 
@@ -102,7 +102,7 @@ instead.
 |-----------------|------------|-------|
 | Protocol Number | u8         |       |
 
-Ox00 Handshake should only send a u8 for the protocol number. If the child does
+Ox00 Handshake should only send a u8 for the protocol number. If the worker does
 not support the protocol version, they should send a [0x07 Disconnect](#0x07-disconnect) in response
 instead of [0x08 Handshake Response](#0x08-handshake-response).
 
@@ -128,7 +128,7 @@ predetermined type. Then, the range end should be sent as the predetermined type
 |------------|------------|-------|
 |            |            |       |
 
-[0x09 Ping](#0x09-ping) leaves the data field empty, and the child should respond with a
+[0x09 Ping](#0x09-ping) leaves the data field empty, and the worker should respond with a
 [0x10 Pong](#0x10-pong).
 
 # Packets for Either
