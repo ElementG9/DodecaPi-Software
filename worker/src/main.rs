@@ -3,7 +3,7 @@ use protocol::packet::*;
 use std::net::{TcpListener, TcpStream};
 
 static SERVER_PORT: u16 = 6500;
-static SERVER_PROTOCOL_VERSION: u8 = 2;
+static SERVER_PROTOCOL_VERSION: u8 = 3;
 
 fn main() {
     let listener_address = &format!("0.0.0.0:{}", SERVER_PORT);
@@ -20,6 +20,7 @@ enum ConnectionState {
     Handshake,
     Ping,
     Work,
+    Wait,
     Disconnected,
 }
 struct Connection {
@@ -49,6 +50,7 @@ fn handle_connection(mut c: Connection) -> std::io::Result<()> {
                 c.state = match p.next_state {
                     0x00 => ConnectionState::Ping,
                     0x01 => ConnectionState::Work,
+                    0x02 => ConnectionState::Wait,
                     _ => {
                         // Unexpected next state
                         println!("Unexpected next state. Disconnecting...");
@@ -76,7 +78,20 @@ fn handle_connection(mut c: Connection) -> std::io::Result<()> {
                 println!("Sending 0x10 Pong");
                 let _ = Pong::new().write(&mut c.stream)?;
             }
-            ConnectionState::Work => {}
+            ConnectionState::Work => {
+                // Do some work here and return result
+                // Return to the wait state for further instructions
+                ConnectionState::Wait;
+            }
+            ConnectionState::Wait => {
+                println!("Awaiting instructions");
+                let (_packet_len, packet_id) = read_packet_header(&mut c.stream)?;
+                if packet_id == 0x07 {
+                    println!("Master wanted a disconnect");
+                    disconnect(&mut c)?;
+                    return Ok(());
+                }
+            }
             ConnectionState::Disconnected => {}
         }
     }

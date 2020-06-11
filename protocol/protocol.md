@@ -104,7 +104,7 @@ instead.
 | Next State      | u8         |       |
 
 0x00 Handshake should send the master's protocol version, and the next state. Next
-State can either be 0x00 for Ping, or 0x01 for Work. If the worker does not
+State can either be 0x00 for Ping, 0x01 for Work, or 0x02 for Wait. If the worker does not
 support the protocol version, they should send a [0x07 Disconnect](#0x07-disconnect)
 in response instead of [0x08 Handshake Response](#0x08-handshake-response).
 
