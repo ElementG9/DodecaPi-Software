@@ -114,13 +114,13 @@ in response instead of [0x08 Handshake Response](#0x08-handshake-response).
 
 ## 0x05 Factor Request
 
-| Field Name  | Field Type    | Notes                                  |
-|-------------|---------------|----------------------------------------|
-| Range Type  | string        | Either "u8", "u16", "u32", or "u64".   |
-| Range Start | predetermined | The type was determined in Range Type. |
-| Range End   | predetermined | The type was determined in Range Type. |
+| Field Name  | Field Type    | Notes                                                   |
+|-------------|---------------|---------------------------------------------------------|
+| Range Type  | u8            | 0x00 for u8, 0x01 for u16, 0x02 for u32 and 0x03 for u64|
+| Range Start | predetermined | The type was determined in Range Type.                  |
+| Range End   | predetermined | The type was determined in Range Type.                  |
 
-[0x05 Factor Request](#0x05-factor-request) should send either "u8", "u16", "u32", or "u64" to determine
+[0x05 Factor Request](#0x05-factor-request) should send either "u8" (0x00), "u16" (0x01), "u32" (0x02), or "u64" (0x03) to determine
 the type of the range start and end. Then, the range start should be sent as the
 predetermined type. Then, the range end should be sent as the predetermined type.
 
