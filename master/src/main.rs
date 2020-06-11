@@ -5,7 +5,7 @@ use std::net::TcpStream;
 
 static SERVER_ADDRESS: &str = "0.0.0.0";
 static SERVER_PORT: u16 = 6500;
-static CLIENT_PROTOCOL_VERSION: u8 = 2;
+static CLIENT_PROTOCOL_VERSION: u8 = 3;
 
 fn main() -> std::io::Result<()> {
     let mut stream = TcpStream::connect(&format!("{}:{}", SERVER_ADDRESS, SERVER_PORT))
