@@ -109,6 +109,13 @@ pub fn read_vec_u64(v: &mut Vec<u8>) -> Result<u64, ()> {
     }
 }
 
+pub fn disconnect(t: &mut TcpStream) -> std::io::Result<()> {
+    use std::net::Shutdown;
+    crate::packet::Disconnect::new().write(t)?;
+    t.shutdown(Shutdown::Both)?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
