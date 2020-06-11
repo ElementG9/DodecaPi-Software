@@ -79,9 +79,14 @@ fn handle_connection(mut c: Connection) -> std::io::Result<()> {
                 let _ = Pong::new().write(&mut c.stream)?;
             }
             ConnectionState::Work => {
-                // Do some work here and return result
-                // Return to the wait state for further instructions
-                ConnectionState::Wait;
+                let (_packet_len, packet_id) = read_packet_header(&mut c.stream)?;
+                if packet_id != 0x05 {
+                    println!("Unexpected packet ID {} for State: Work, disconnecting", packet_id);
+                    disconnect(&mut c)?;
+                    return Ok(());
+                }
+
+                let t = FactorRequest::read(&mut c.stream)?;
             }
             ConnectionState::Wait => {
                 println!("Awaiting instructions");
