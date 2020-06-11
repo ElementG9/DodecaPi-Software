@@ -141,5 +141,4 @@ predetermined type. Then, the range end should be sent as the predetermined type
 |------------|------------|-------|
 |            |            |       |
 
-[0x07 Disconnect](#0x07-disconnect) leaves the data field empty, but the sender and recipient
-should both attempt to close the connection after sending / receiving it.
+[0x07 Disconnect](#0x07-disconnect) leaves the data field empty, but the sender and recipient should both attempt to close the connection after sending / receiving it.
