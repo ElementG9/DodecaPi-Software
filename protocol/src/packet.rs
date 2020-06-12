@@ -156,3 +156,49 @@ impl FactorRequest {
         bytes
     }
 }
+
+// Currently all u64s for the factor ranges for simplicity
+#[derive(Debug, Clone, PartialEq)]
+pub struct FactorResponse {
+    pub found_factor: bool,
+    pub factor_value_type: u8,
+    pub factor_value: u64,
+}
+impl FactorResponse {
+    pub fn new(found_factor: bool, factor_value_type: u8, factor_value: u64) -> FactorResponse {
+        FactorResponse {
+            found_factor,
+            factor_value_type,
+            factor_value,
+        }
+    }
+    pub fn read(t: &mut TcpStream) -> std::io::Result<FactorResponse> {
+        let found_factor = read_u8(t)? == 0x01;
+        let factor_value_type = read_u8(t)?;
+        let factor_value = read_u64(t)?;
+        Ok(FactorResponse::new(
+            found_factor,
+            factor_value_type,
+            factor_value,
+        ))
+    }
+    pub fn write(&self, t: &mut TcpStream) -> std::io::Result<()> {
+        write_bytes(t, &self.to_bytes())?;
+        Ok(())
+    }
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        write_vec_u32(&mut bytes, 11); // 11: 1 for ID, 1 for found_factor, 1 for factor_value_type, 8 for factor_value
+        write_vec_u8(&mut bytes, 0x06); // 0x06 FactorResponse
+        write_vec_u8(
+            &mut bytes,
+            match self.found_factor {
+                true => 0x01,
+                false => 0x00,
+            },
+        );
+        write_vec_u8(&mut bytes, self.factor_value_type);
+        write_vec_u64(&mut bytes, self.factor_value);
+        bytes
+    }
+}

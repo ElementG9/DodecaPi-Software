@@ -65,13 +65,13 @@ a [0x07 Disconnect](#0x07-disconnect) to end the connection.
 
 | Field Name        | Field Type    | Notes                                                                                    |
 |-------------------|---------------|------------------------------------------------------------------------------------------|
-| Found Factor      | boolean       | Only true if the worker found a factor. If false, the other fields should be ignored.     |
-| Factor Value Type | string        | Either "u8", "u16", "u32", or "u64". Defaults to "u8" if Found Factor is false.          |
+| Found Factor      | boolean       | Only true if the worker found a factor. If false, the other fields should be ignored.    |
+| Factor Value Type | u8            | 0x00 for u8, 0x01 for u16, 0x02 for u32 and 0x03 for u64.                                |
 | Factor Value      | predetermined | The type was determined in Factor Value Type. Defaults to 0x00 if Found Factor is false. |
 
 [0x06 Factor Response](#0x06-factor-response) returns the results of the worker's work for factoring the
 range provided. If no factor was found in the range, then Found Factor is false.
-If Found Factor is false, Factor Value Type defaults to "u8" and Factor Value to
+If Found Factor is false, Factor Value Type defaults to u8 (0x00) and Factor Value to
 0x00. If Found Factor is true, Factor Value type is the type provided in
 [0x05 Factor Request](#0x05-factor-request), and Factor Value contains the factor.
 
