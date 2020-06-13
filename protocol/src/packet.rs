@@ -122,24 +122,25 @@ impl Disconnect {
     }
 }
 
-
-// neko miko reimu ai shiteru neko miko reimu nani shiteru neko miko reimu shuran yurari
 #[derive(Debug, Clone, PartialEq)]
 pub struct FactorRequest {
+    pub target: u64,
     pub range_start: u64,
     pub range_end: u64,
 }
 impl FactorRequest {
-    pub fn new(range_start: u64, range_end: u64) -> FactorRequest {
+    pub fn new(target: u64, range_start: u64, range_end: u64) -> FactorRequest {
         FactorRequest {
+            target,
             range_start,
             range_end,
         }
     }
     pub fn read(t: &mut TcpStream) -> std::io::Result<FactorRequest> {
+        let target = read_u64(t)?;
         let range_start = read_u64(t)?;
         let range_end = read_u64(t)?;
-        Ok(FactorRequest::new(range_start, range_end))
+        Ok(FactorRequest::new(target, range_start, range_end))
     }
     pub fn write(&self, t: &mut TcpStream) -> std::io::Result<()> {
         write_bytes(t, &self.to_bytes())?;
@@ -147,14 +148,14 @@ impl FactorRequest {
     }
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut bytes = Vec::new();
-        write_vec_u32(&mut bytes, 16); // 16: 8 for range_start, 8 for range_end
-        write_vec_u8(&mut bytes, 0x05); // 0x05 FactorRequest
+        write_vec_u32(&mut bytes, 25); // 25: 1 for ID, 8 for target, 8 for range_start, 8 for range_end
+        write_vec_u8(&mut bytes, 0x05); // 0x05 Factor Request
+        write_vec_u64(&mut bytes, self.target);
         write_vec_u64(&mut bytes, self.range_start);
         write_vec_u64(&mut bytes, self.range_end);
         bytes
     }
 }
-
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct FactorResponse {
@@ -171,11 +172,7 @@ impl FactorResponse {
     pub fn read(t: &mut TcpStream) -> std::io::Result<FactorResponse> {
         let found_factor = read_u8(t)? == 0x01;
         let factor_value = read_u64(t)?;
-        Ok(FactorResponse::new(
-            found_factor,
-            factor_value_type,
-            factor_value,
-        ))
+        Ok(FactorResponse::new(found_factor, factor_value))
     }
     pub fn write(&self, t: &mut TcpStream) -> std::io::Result<()> {
         write_bytes(t, &self.to_bytes())?;
@@ -183,7 +180,7 @@ impl FactorResponse {
     }
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut bytes = Vec::new();
-        write_vec_u32(&mut bytes, 9); // ⑨: 1 for found_factor 8 for factor_value
+        write_vec_u32(&mut bytes, 9); // 9: 1 for found_factor 8 for factor_value
         write_vec_u8(&mut bytes, 0x06); // 0x06 FactorResponse
         write_vec_u8(
             &mut bytes,

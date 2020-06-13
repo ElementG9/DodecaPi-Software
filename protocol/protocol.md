@@ -114,12 +114,13 @@ in response instead of [0x08 Handshake Response](#0x08-handshake-response).
 
 | Field Name  | Field Type    | Notes  |
 |-------------|---------------|--------|
+| Target      | u64           |        |
 | Range Start | u64           |        |
 | Range End   | u64           |        |
 
-[0x05 Factor Request](#0x05-factor-request) Should first send the beginning of the range of numbers
-to factor as a u64, and then the end of the range as a u64.
-Both start and end should be Inclusive.
+[0x05 Factor Request](#0x05-factor-request) Target is the number to be factored.
+Should first send the beginning of the range of numbers to factor as a u64, and
+then the end of the range as a u64. Range Start is inclusive, and Range End is exclusive.
 
 ## 0x09 Ping
 
