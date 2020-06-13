@@ -81,12 +81,23 @@ fn handle_connection(mut c: Connection) -> std::io::Result<()> {
             ConnectionState::Work => {
                 let (_packet_len, packet_id) = read_packet_header(&mut c.stream)?;
                 if packet_id != 0x05 {
-                    println!("Unexpected packet ID {} for State: Work, disconnecting", packet_id);
+                    // If not 0x05 Factor Request
+                    println!("Didn't get 0x05 Factor Request when expected. Disconnecting...");
                     disconnect(&mut c)?;
                     return Ok(());
                 }
-
-                let t = FactorRequest::read(&mut c.stream)?;
+                let packet = FactorRequest::read(&mut c.stream)?;
+                println!(
+                    "Target: {}, Start: {}, End: {}",
+                    packet.target, packet.range_start, packet.range_end
+                );
+                let f = factor(packet.target, packet.range_start, packet.range_end);
+                println!("Factor Result: {:?}", f);
+                println!("Sending 0x06 Factor Response");
+                let _ = match f {
+                    Some(n) => FactorResponse::new(true, n).write(&mut c.stream)?,
+                    None => FactorResponse::new(false, 0).write(&mut c.stream)?,
+                };
             }
             ConnectionState::Wait => {
                 println!("Awaiting instructions");
@@ -106,4 +117,14 @@ fn disconnect(c: &mut Connection) -> std::io::Result<()> {
     protocol::packet::Disconnect::new().write(&mut c.stream)?;
     c.stream.shutdown(std::net::Shutdown::Both)?;
     Ok(())
+}
+fn factor(target: u64, start: u64, end: u64) -> Option<u64> {
+    for i in start..end {
+        if i != 0 && i != 1 {
+            if target % i == 0 {
+                return Some(i);
+            }
+        }
+    }
+    None
 }
