@@ -66,14 +66,12 @@ a [0x07 Disconnect](#0x07-disconnect) to end the connection.
 | Field Name        | Field Type    | Notes                                                                                    |
 |-------------------|---------------|------------------------------------------------------------------------------------------|
 | Found Factor      | boolean       | Only true if the worker found a factor. If false, the other fields should be ignored.    |
-| Factor Value Type | u8            | 0x00 for u8, 0x01 for u16, 0x02 for u32 and 0x03 for u64.                                |
-| Factor Value      | predetermined | The type was determined in Factor Value Type. Defaults to 0x00 if Found Factor is false. |
+| Factor Value      | u64           | Defaults to 0x00 if Found Factor is false.                                               |
 
 [0x06 Factor Response](#0x06-factor-response) returns the results of the worker's work for factoring the
 range provided. If no factor was found in the range, then Found Factor is false.
-If Found Factor is false, Factor Value Type defaults to u8 (0x00) and Factor Value to
-0x00. If Found Factor is true, Factor Value type is the type provided in
-[0x05 Factor Request](#0x05-factor-request), and Factor Value contains the factor.
+If Found Factor is false, Factor Value defaults to 0x00.
+If Found Factor is true, it is sent as a u64.
 
 ## 0x08 Handshake Response
 
@@ -114,15 +112,14 @@ in response instead of [0x08 Handshake Response](#0x08-handshake-response).
 
 ## 0x05 Factor Request
 
-| Field Name  | Field Type    | Notes                                                   |
-|-------------|---------------|---------------------------------------------------------|
-| Range Type  | u8            | 0x00 for u8, 0x01 for u16, 0x02 for u32 and 0x03 for u64|
-| Range Start | predetermined | The type was determined in Range Type.                  |
-| Range End   | predetermined | The type was determined in Range Type.                  |
+| Field Name  | Field Type    | Notes  |
+|-------------|---------------|--------|
+| Range Start | u64           |        |
+| Range End   | u64           |        |
 
-[0x05 Factor Request](#0x05-factor-request) should send either "u8" (0x00), "u16" (0x01), "u32" (0x02), or "u64" (0x03) to determine
-the type of the range start and end. Then, the range start should be sent as the
-predetermined type. Then, the range end should be sent as the predetermined type.
+[0x05 Factor Request](#0x05-factor-request) Should first send the beginning of the range of numbers
+to factor as a u64, and then the end of the range as a u64.
+Both start and end should be Inclusive.
 
 ## 0x09 Ping
 
